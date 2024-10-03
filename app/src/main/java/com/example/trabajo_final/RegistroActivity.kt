@@ -64,21 +64,36 @@ class RegistroActivity : AppCompatActivity() {
                 verificarUsuarioExistente(nombre, apellido, correo) { usuarioExiste ->
                     if (!usuarioExiste) {
                         // Si no existe, registrar al usuario
-                        val usuario = mapOf(
-                            "nombre" to nombre,
-                            "apellido" to apellido,
-                            "correo" to correo,
-                            "contrasena" to contrasena
-                        )
+                        // Contar cuántos usuarios ya existen
+                        database.child("usuarios").addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                val usuarioCount = dataSnapshot.childrenCount
+                                val nuevoNombreUsuario = "usuario${usuarioCount + 1}" // Crear un nombre secuencial
 
-                        database.child("usuarios").push().setValue(usuario)
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    Toast.makeText(this, "Usuario registrado correctamente", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(this, "Error al registrar usuario", Toast.LENGTH_SHORT).show()
-                                }
+                                val usuario = mapOf(
+                                    "nombre" to nombre,
+                                    "apellido" to apellido,
+                                    "correo" to correo,
+                                    "contrasena" to contrasena
+                                )
+
+                                database.child("usuarios").child(nuevoNombreUsuario).setValue(usuario)
+                                    .addOnCompleteListener { task ->
+                                        if (task.isSuccessful) {
+                                            Toast.makeText(this@RegistroActivity, "Usuario registrado correctamente", Toast.LENGTH_SHORT).show()
+                                            // Redirigir a la actividad principal o inicio de sesión
+                                            startActivity(Intent(this@RegistroActivity, MainActivity::class.java))
+                                            finish() // Finaliza la actividad de registro
+                                        } else {
+                                            Toast.makeText(this@RegistroActivity, "Error al registrar usuario", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
                             }
+
+                            override fun onCancelled(databaseError: DatabaseError) {
+                                Toast.makeText(this@RegistroActivity, "Error al contar usuarios: ${databaseError.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        })
                     } else {
                         // Si ya existe, mostrar un mensaje de error
                         Toast.makeText(this, "Usuario con el mismo nombre, apellido o correo ya existe", Toast.LENGTH_SHORT).show()

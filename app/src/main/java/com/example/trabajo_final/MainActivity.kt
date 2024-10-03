@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         // Referencia al botón de registro
         val btnRegistrar = findViewById<Button>(R.id.Registrar_Usuario)
 
@@ -66,11 +67,16 @@ class MainActivity : AppCompatActivity() {
                     // Recorre los resultados para verificar la contraseña
                     for (usuarioSnapshot in dataSnapshot.children) {
                         val usuarioContrasena = usuarioSnapshot.child("contrasena").getValue(String::class.java)
+                        val nombre = usuarioSnapshot.child("nombre").getValue(String::class.java)
+                        val apellido = usuarioSnapshot.child("apellido").getValue(String::class.java)
 
                         // Verifica si la contraseña coincide
                         if (usuarioContrasena == contrasena) {
                             // Si coincide, redirige a la actividad PaginaPrincipal
-                            val intent = Intent(this@MainActivity, PaginaPrincipal::class.java)
+                            val intent = Intent(this@MainActivity, PaginaPrincipal::class.java).apply {
+                                putExtra("nombre", nombre)
+                                putExtra("apellido", apellido)
+                            }
                             startActivity(intent)
                             finish()
                         } else {

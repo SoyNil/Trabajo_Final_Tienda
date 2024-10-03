@@ -60,4 +60,9 @@ dependencies {
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
     implementation ("com.github.bumptech.glide:glide:4.15.0")
     kapt("com.github.bumptech.glide:compiler:4.15.0") // Asegúrate de que esto esté aquí
+    implementation ("com.google.firebase:firebase-storage")
+    implementation ("com.google.firebase:firebase-database")
+    implementation ("androidx.recyclerview:recyclerview:1.3.0") // O la versión más reciente
+    implementation ("com.github.bumptech.glide:glide:4.13.2") // O la versión más reciente
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
 }
